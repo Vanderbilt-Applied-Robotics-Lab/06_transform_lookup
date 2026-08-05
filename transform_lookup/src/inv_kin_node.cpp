@@ -131,9 +131,14 @@ int main(int argc, char** argv)
     // Set loop rate
     rclcpp::Rate rate = rclcpp::Rate(1); // Hz
     
-    while (node->solveNextPose())
+    while (rclcpp::ok())
     {
-        rclcpp::spin_some(node);
+        rclcpp::spin_some(node); // allow the /robot_description callback to fire first
+        
+        // break if there are not any new poses to solve
+        if (!node->solveNextPose())
+            break;
+
         rate.sleep();
     }
     rclcpp::shutdown();
